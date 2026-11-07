@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!129 &1
+PlayerSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 26
+  productGUID: 7a8e9f1234567890abcdef1234567890
+  AndroidProfiler: 0
+  defaultScreenOrientation: 1
+  targetDevice: 2
+  useOnDemandResources: 0
+  accelerometerFrequency: 60
+  companyName: KidsPlayStudios
+  productName: Kids Nail Salon - Beauty Studio
+  defaultCursor: {fileID: 0}
+  cursorHotspot: {x: 0, y: 0}
+  m_SplashScreenBackgroundColor: {r: 1, g: 0.88, b: 0.94, a: 1}
+  defaultScreenWidth: 1080
+  defaultScreenHeight: 1920
+  defaultScreenWidthWeb: 540
+  defaultScreenHeightWeb: 960
+  m_RenderingPath: 1
+  m_MobileRenderingPath: 1
+  activeColorSpace: 1
+  m_StripEngineCode: 1
+  runInBackground: 0
+  captureSingleScreen: 0
+  useFlipModelSwapchain: 1
+  overrideIPodMusic: 0
+  resetTracker: 0
+  m_MTRendering: 1
+  m_MobileMTRendering: 1
+  m_StackTracePreferences: 010000000100000001000000010000000100000001000000
+  applicationIdentifier:
+    Android: com.kidsplay.nailsalon.beautystudio
+    iPhone: com.kidsplay.nailsalon.beautystudio
+    Standalone: com.kidsplay.nailsalon.beautystudio
+  buildNumber:
+    iPhone: 1
+    Android: 1
+  bundleVersion: 1.0.0
+  AndroidBundleVersionCode: 1
+  AndroidMinSdkVersion: 24
+  AndroidTargetSdkVersion: 34
+  AndroidBuildApkPerCpuArchitecture: 0
+  AndroidEnableArmv9SecurityFeatures: 0
+  AndroidPostGenerateGradleAndroidProject: 1
+  iOSArchitecture: 2
+  iOSRequirePersistentWiFi: 0
+  iOSTargetOSVersionString: 13.0
+  cameraUsageDescription: "Kids Nail Salon allows taking pictures to frame your custom nail art."
+  photoLibraryUsageDescription: "Kids Nail Salon saves your customized nail artwork to your device photo gallery."

@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - NailSlot
+  - Sticker
+  - Gem
+  - Accessory
+  - HandBase
+  - HandCareTool
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - HandLayer
+  - NailLayer
+  - StickerLayer
+  - DecorationLayer
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 100
+    locked: 0
+  - name: Hand
+    uniqueID: 200
+    locked: 0
+  - name: NailBase
+    uniqueID: 300
+    locked: 0
+  - name: NailPolish
+    uniqueID: 400
+    locked: 0
+  - name: NailPattern
+    uniqueID: 500
+    locked: 0
+  - name: Stickers
+    uniqueID: 600
+    locked: 0
+  - name: Gems
+    uniqueID: 700
+    locked: 0
+  - name: Accessories
+    uniqueID: 800
+    locked: 0
+  - name: ToolFX
+    uniqueID: 900
+    locked: 0
+  - name: OverlayUI
+    uniqueID: 1000
+    locked: 0

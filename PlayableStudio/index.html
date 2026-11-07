@@ -1,0 +1,2684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=dece-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kids Nail Salon – Beauty Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-pink: #FF69B4;
+      --pastel-pink: #FFD1DC;
+      --soft-lavender: #E6E6FA;
+      --bubblegum: #FF85A2;
+      --mint: #B2F5EA;
+      --bg-cream: #FFF5F7;
+      --text-dark: #4A303D;
+      --card-shadow: 0 10px 25px rgba(255, 105, 180, 0.25);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; margin: 0; padding: 0; }
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      background: #FFE4EC;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    #game-container {
+      width: 100vw;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 960px;
+      background: white;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 15px 45px rgba(214, 51, 132, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+    .screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: none;
+      flex-direction: column;
+      background-size: cover;
+      background-position: center;
+      transition: opacity 0.3s ease;
+    }
+    .screen.active { display: flex; }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      z-index: 20;
+    }
+    .btn-circle {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: white;
+      border: 2px solid #FFB6C1;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .btn-circle:active { transform: scale(0.9); }
+    .btn-circle:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-circle.accent { background: #FF69B4; color: white; border-color: #FF1493; }
+
+    /* Main Menu */
+    #screen-menu {
+      background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .logo-badge {
+      background: white;
+      padding: 16px 28px;
+      border-radius: 35px;
+      box-shadow: var(--card-shadow);
+      border: 4px solid #FF85A2;
+      animation: floatBadge 3s ease-in-out infinite;
+      margin-bottom: 30px;
+    }
+    .logo-badge h1 {
+      font-size: 32px;
+      background: linear-gradient(45deg, #FF1493, #FF8DA1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+    .logo-badge p {
+      font-size: 16px;
+      color: #9C4D76;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 260px;
+    }
+    .btn-large {
+      padding: 16px 24px;
+      border-radius: 30px;
+      border: none;
+      font-size: 22px;
+      font-family: inherit;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-large:active { transform: scale(0.95); }
+    .btn-play { background: linear-gradient(45deg, #FF69B4, #FF1493); border: 3px solid #FFF; }
+    .btn-gallery { background: linear-gradient(45deg, #9C88FF, #6C5CE7); border: 3px solid #FFF; }
+    .btn-settings { background: linear-gradient(45deg, #48DBFB, #0ABDE3); border: 3px solid #FFF; }
+
+    /* Character Selection */
+    #screen-char {
+      background: linear-gradient(180deg, #FFF0F5 0%, #E6E6FA 100%);
+      padding: 20px;
+      align-items: center;
+    }
+    .char-preview-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .char-hand-img {
+      max-height: 380px;
+      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15));
+      transition: transform 0.3s;
+    }
+    .skin-tone-picker {
+      display: flex;
+      gap: 14px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      padding: 12px 20px;
+      border-radius: 30px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+    }
+    .tone-swatch {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .tone-swatch.selected {
+      transform: scale(1.2);
+      border-color: #FF1493;
+    }
+
+    /* Hand Care Screen */
+    #screen-care {
+      background: linear-gradient(180deg, #FFF5F7 0%, #FFE4E1 100%);
+      align-items: center;
+      padding: 16px;
+      user-select: none;
+    }
+    .spa-steps-nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      z-index: 10;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .spa-step-pill {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 14px;
+      background: white;
+      border: 2px solid #FFD1DC;
+      border-radius: 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #6C757D;
+      transition: all 0.25s;
+    }
+    .spa-step-pill.active {
+      background: #FF69B4;
+      color: white;
+      border-color: #FF1493;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.4);
+    }
+    .spa-step-pill.done {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border-color: #81C784;
+    }
+    .spa-instruction {
+      background: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-size: 16px;
+      color: #D63384;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 8px;
+      text-align: center;
+      max-width: 90%;
+    }
+    .care-canvas-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      overflow: hidden;
+    }
+    .care-hand-wrap {
+      position: relative;
+      width: 253px;
+      height: 380px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: none;
+      user-select: none;
+      transition: filter 0.3s ease;
+    }
+    .care-hand-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+    .spa-overlay-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      transition: opacity 0.25s ease-out;
+    }
+    .spa-particles-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .jagged-nail-tip {
+      position: absolute;
+      transform-origin: center bottom;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+      transition: transform 0.1s linear, opacity 0.2s ease-out;
+    }
+    .nail-dust-particle {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 0 5px rgba(255, 200, 210, 0.9);
+      animation: dustFly 0.45s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+    }
+    @keyframes dustFly {
+      0% { transform: scale(1) translate(0, 0); opacity: 1; }
+      100% { transform: scale(0.2) translate(var(--dx, 15px), var(--dy, -20px)); opacity: 0; }
+    }
+    .soapy-foam-blob {
+      position: absolute;
+      pointer-events: none;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #FFFFFF 15%, #F0F9FF 55%, #DDF2FD 85%, #BAE6FD 100%);
+      border: 1.5px solid rgba(255,255,255,0.95);
+      box-shadow: 0 3px 8px rgba(186, 230, 253, 0.6), inset 0 2px 5px rgba(255,255,255,0.95);
+      animation: foamPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      z-index: 10;
+    }
+    @keyframes foamPop {
+      0% { transform: scale(0.2); opacity: 0; }
+      100% { transform: scale(1); opacity: 0.95; }
+    }
+    .soapy-floating-bubble {
+      position: absolute;
+      pointer-events: none;
+      font-size: 22px;
+      animation: bubbleFloat 1.2s ease-out forwards;
+      z-index: 20;
+    }
+    @keyframes bubbleFloat {
+      0% { transform: scale(0.6) translate(0, 0); opacity: 1; }
+      50% { transform: scale(1.1) translate(var(--bx, 10px), -25px); opacity: 0.9; }
+      100% { transform: scale(1.3) translate(var(--bx, 15px), -55px); opacity: 0; }
+    }
+    .care-tool {
+      position: absolute;
+      width: 75px;
+      pointer-events: none;
+      transform: translate(-50%, -50%) rotate(var(--tool-rot, -35deg));
+      transition: transform 0.1s ease-out;
+      z-index: 35;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+    }
+    .care-progress-wrap {
+      position: relative;
+      width: 82%;
+      max-width: 320px;
+      height: 24px;
+      background: #FFF0F5;
+      border-radius: 14px;
+      overflow: hidden;
+      margin: 12px 0 6px;
+      border: 3px solid #FF85A2;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 4px 12px rgba(255,105,180,0.25);
+      display: flex;
+      align-items: center;
+    }
+    .care-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #FF69B4, #FF1493);
+      box-shadow: 0 0 12px rgba(255,20,147,0.8);
+      transition: width 0.12s ease-out;
+    }
+    .care-progress-label {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4A303D;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.9);
+      pointer-events: none;
+    }
+    .uv-progress-wrap {
+      width: 75%;
+      height: 10px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 6px;
+      border: 1px solid rgba(255,255,255,0.6);
+    }
+    .uv-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #E040FB, #7C4DFF);
+      box-shadow: 0 0 10px #E040FB;
+      transition: width 0.2s linear;
+    }
+    .spa-bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95) 0%, rgba(255,240,250,0.6) 40%, rgba(200,230,255,0.45) 75%, rgba(255,255,255,0.9) 100%);
+      box-shadow: inset 0 0 8px rgba(255,255,255,0.9), 0 2px 6px rgba(0,0,0,0.08);
+      pointer-events: none;
+      animation: bubbleFloat 1.8s ease-in-out infinite alternate;
+      z-index: 25;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    @keyframes bubbleFloat {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-6px) scale(1.06); }
+    }
+    .cream-dollop {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #FFB6C1 60%, #FF69B4 100%);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      pointer-events: none;
+      z-index: 24;
+      animation: dollopPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes dollopPop {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* UV Lamp Dryer System */
+    .uv-lamp-overlay {
+      position: absolute;
+      top: -260px;
+      left: 0;
+      width: 100%;
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: top 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 45;
+      pointer-events: none;
+    }
+    .uv-lamp-overlay.active {
+      top: 0px;
+      pointer-events: auto;
+    }
+    .uv-lamp-hood {
+      width: 88%;
+      max-width: 380px;
+      height: 120px;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F3E5F5 40%, #E1BEE7 100%);
+      border-bottom-left-radius: 45px;
+      border-bottom-right-radius: 45px;
+      box-shadow: 0 16px 36px rgba(106, 27, 154, 0.45), inset 0 2px 6px rgba(255,255,255,0.9);
+      border: 4px solid #BA68C8;
+      border-top: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .uv-lamp-light-beam {
+      position: absolute;
+      top: 100%;
+      width: 100%;
+      height: 350px;
+      background: linear-gradient(180deg, rgba(171, 71, 188, 0.7) 0%, rgba(123, 31, 162, 0.4) 45%, rgba(156, 39, 176, 0) 100%);
+      filter: blur(8px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .uv-lamp-overlay.active .uv-lamp-light-beam {
+      opacity: 1;
+      animation: uvPulse 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes uvPulse {
+      0% { opacity: 0.75; }
+      100% { opacity: 1; }
+    }
+    .uv-countdown-text {
+      font-size: 20px;
+      font-weight: 800;
+      color: #6A1B9A;
+      text-shadow: 0 0 10px rgba(186, 104, 200, 0.8), 0 2px 4px rgba(255,255,255,0.9);
+      letter-spacing: 1px;
+    }
+
+    /* Fullscreen Camera Shutter Flash */
+    .camera-flash {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.35s ease-out;
+    }
+    .camera-flash.flash {
+      opacity: 0.95;
+      transition: none;
+    }
+
+    /* Studio Main Stage */
+    #screen-studio {
+      background: radial-gradient(circle at 50% 35%, #FFFFFF 0%, #FFF0F5 55%, #FFE4EC 100%);
+    }
+    .studio-stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      perspective: 1200px;
+      perspective-origin: center center;
+    }
+    .studio-stage::before {
+      content: '';
+      position: absolute;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.85) 0%, rgba(255,215,230,0.45) 50%, rgba(255,255,255,0) 75%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hand-container {
+      position: relative;
+      width: 320px;
+      height: 480px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      transform-style: preserve-3d;
+      transition: transform 0.12s cubic-bezier(0.2, 0.8, 0.4, 1);
+      z-index: 5;
+    }
+    .base-hand-svg {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      filter: drop-shadow(0 16px 28px rgba(74, 48, 61, 0.22)) drop-shadow(0 4px 10px rgba(0,0,0,0.1));
+      transform: translateZ(0px);
+    }
+    .nail-anchor {
+      position: absolute;
+      width: 44px;
+      height: 70px;
+      cursor: pointer;
+      transform-origin: center bottom;
+      transform: rotate(var(--rot, 0deg)) scale(var(--scale, 1));
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.2s;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.22)) drop-shadow(0 1px 2px rgba(0,0,0,0.18));
+      transform-style: preserve-3d;
+    }
+    .nail-anchor:hover {
+      filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.85)) drop-shadow(0 4px 8px rgba(0,0,0,0.28));
+    }
+    .nail-anchor.selected {
+      transform: rotate(var(--rot, 0deg)) scale(calc(var(--scale, 1) * 1.15)) translateZ(10px) !important;
+      filter: drop-shadow(0 0 12px #FF1493) drop-shadow(0 0 22px rgba(255, 20, 147, 0.6)) drop-shadow(0 6px 12px rgba(0,0,0,0.32));
+    }
+    .nail-mask-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Accessories Layer with Realistic 3D Cast Shadow */
+    .accessory-layer {
+      position: absolute;
+      pointer-events: none;
+      z-index: 15;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.32)) drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+      transform: translateZ(6px);
+      transition: filter 0.2s;
+    }
+
+    /* Bottom Tool Tray */
+    .studio-tools {
+      background: white;
+      border-top-left-radius: 28px;
+      border-top-right-radius: 28px;
+      box-shadow: 0 -8px 25px rgba(0,0,0,0.08);
+      padding: 12px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 25;
+    }
+    .tool-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .tool-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      background: #F8F9FA;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 700;
+      color: #6C757D;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: #FF69B4;
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.35);
+    }
+    .palette-scroll {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 8px 4px;
+      min-height: 64px;
+      align-items: center;
+      scrollbar-width: none;
+    }
+    .palette-scroll::-webkit-scrollbar { display: none; }
+    .palette-item {
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .palette-item:active { transform: scale(0.9); }
+    .palette-item img { max-width: 80%; max-height: 80%; pointer-events: none; }
+
+    /* Result Screen */
+    #screen-result {
+      background: linear-gradient(135deg, #FFE4EC 0%, #E6E6FA 100%);
+      align-items: center;
+      padding: 20px;
+    }
+    .result-hand-preview {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+    .result-card {
+      background: white;
+      border-radius: 28px;
+      padding: 16px;
+      box-shadow: var(--card-shadow);
+      width: 90%;
+      max-width: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 4px solid #FFB6C1;
+    }
+
+    /* Gallery Screen */
+    #screen-gallery {
+      background: #FFF5F8;
+      padding: 16px;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      overflow-y: auto;
+      padding: 10px 4px;
+      flex: 1;
+    }
+    .gallery-item {
+      background: white;
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      border: 2px solid #FFD1DC;
+      transition: transform 0.15s;
+    }
+    .gallery-item:active { transform: scale(0.96); }
+
+    /* Parental Gate Modal */
+    .modal-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      width: 85%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+    }
+    .modal-card h3 { color: #D63384; margin-bottom: 8px; }
+    .modal-card input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: 2px solid #FFB6C1;
+      font-size: 20px;
+      text-align: center;
+      margin: 14px 0;
+      font-family: inherit;
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(45, 55, 72, 0.9);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      z-index: 120;
+      transition: transform 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Brush stroke animation ──────────────────────────── */
+    @keyframes brushSwipe {
+      0%   { transform: translateY(-110%) rotate(-12deg) scaleX(0.8); opacity:0; }
+      15%  { opacity: 1; }
+      85%  { opacity: 1; }
+      100% { transform: translateY(120%)  rotate(-12deg) scaleX(0.8); opacity:0; }
+    }
+    .brush-anim {
+      position: absolute;
+      pointer-events: none;
+      font-size: 32px;
+      z-index: 200;
+      animation: brushSwipe 0.42s cubic-bezier(0.4,0,0.2,1) forwards;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    /* ── Confetti canvas ─────────────────────────────────── */
+    #confetti-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* ── Studio stage cute star background ───────────────── */
+    .studio-stage {
+      background: radial-gradient(ellipse at 50% 110%, #FFE4F3 0%, #FFF0F8 55%, #F9ECFF 100%);
+    }
+    .studio-stage::after {
+      content: '⭐ ✨ 💫 ⭐ ✨ 💫 ⭐ ✨ 💫 ⭐ ✨ 💫 ⭐';
+      position: absolute;
+      top: 6px; left: 0; right: 0;
+      font-size: 14px;
+      letter-spacing: 6px;
+      opacity: 0.22;
+      text-align: center;
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    /* ── Hue slider + custom colour picker ───────────────── */
+    .hue-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 2px 8px; width: 100%;
+    }
+    #hue-slider {
+      flex: 1; height: 10px; border-radius: 6px; cursor: pointer;
+      border: none; outline: none;
+      background: linear-gradient(to right,
+        hsl(0,80%,65%), hsl(30,80%,65%), hsl(60,80%,65%),
+        hsl(120,80%,65%), hsl(180,80%,65%), hsl(240,80%,65%),
+        hsl(300,80%,65%), hsl(360,80%,65%));
+      -webkit-appearance: none; appearance: none;
+    }
+    #hue-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: white; border: 3px solid #FF69B4;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .hue-preview {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 3px solid #FFB6C1; cursor: pointer; flex-shrink: 0;
+      transition: transform 0.15s;
+    }
+    .hue-preview:active { transform: scale(0.9); }
+
+    /* ── Sticker emoji grid ───────────────────────────────── */
+    .sticker-emoji-item {
+      width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; cursor: pointer; border-radius: 14px;
+      background: #FFF5F8; border: 2px solid transparent;
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+    }
+    .sticker-emoji-item:hover, .sticker-emoji-item:active {
+      transform: scale(1.2); border-color: #FF69B4;
+      box-shadow: 0 4px 10px rgba(255,105,180,0.4);
+    }
+
+    /* ── Nail placement instruction toast ───────────────── */
+    #sticker-place-hint {
+      display: none;
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: rgba(255,20,147,0.9);
+      color: white; padding: 8px 18px;
+      border-radius: 20px; font-size: 13px; font-weight: 700;
+      pointer-events: none; z-index: 300;
+      white-space: nowrap;
+    }
+
+    /* ── Result screen background ────────────────────────── */
+    #screen-result {
+      background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 50%, #FFF9C4 100%) !important;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="game-container">
+  <div id="camera-flash" class="camera-flash"></div>
+  <div id="toast" class="toast">Notice</div>
+
+  <!-- SCREEN 1: MAIN MENU -->
+  <div id="screen-menu" class="screen active">
+    <div class="logo-badge">
+      <h1>Kids Nail Salon</h1>
+      <p>BEAUTY STUDIO</p>
+    </div>
+    <div class="menu-buttons">
+      <button class="btn-large btn-play" id="btn-play">✨ Play Game</button>
+      <button class="btn-large btn-gallery" id="btn-gallery">💖 My Gallery</button>
+      <button class="btn-large btn-settings" id="btn-settings">⚙️ Settings</button>
+    </div>
+    <div style="margin-top: 30px; display: flex; gap: 14px;">
+      <button class="btn-circle" id="btn-menu-music">🎵</button>
+      <button class="btn-circle" id="btn-menu-sfx">🔊</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: CHARACTER SELECTION -->
+  <div id="screen-char" class="screen">
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-char-back">⬅️</button>
+      <h2>Choose Hand</h2>
+      <div style="width: 44px;"></div>
+    </div>
+    <div class="char-preview-area">
+      <img id="char-hand-img" class="char-hand-img" src="../Assets/Art/Hands/hand_fair.png" alt="Hand">
+    </div>
+    <div class="skin-tone-picker">
+      <div class="tone-swatch selected" data-tone="fair" style="background:#FDE2D2;"></div>
+      <div class="tone-swatch" data-tone="light" style="background:#F8D0B8;"></div>
+      <div class="tone-swatch" data-tone="tan" style="background:#E5A67B;"></div>
+      <div class="tone-swatch" data-tone="caramel" style="background:#B0724C;"></div>
+      <div class="tone-swatch" data-tone="deep" style="background:#6C3E28;"></div>
+    </div>
+    <div style="display: flex; gap: 12px; width: 100%; max-width: 320px; margin-bottom: 12px;">
+      <button class="btn-large btn-play" id="btn-start-spa" style="flex:1; font-size:17px; padding:12px;">🧼 Spa Care</button>
+      <button class="btn-large btn-gallery" id="btn-start-studio" style="flex:1; font-size:17px; padding:12px;">💅 Nail Studio</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: HAND CARE SPA -->
+  <div id="screen-care" class="screen">
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-care-back">⬅️</button>
+      <h2>Hand Spa Care</h2>
+      <button class="btn-circle accent" id="btn-care-done" title="Skip to Studio">✔️</button>
+    </div>
+
+    <!-- 4 Step Tracker -->
+    <div class="spa-steps-nav">
+      <div class="spa-step-pill active" id="pill-step-1">🪚 1. File</div>
+      <div class="spa-step-pill" id="pill-step-2">🧼 2. Soap</div>
+      <div class="spa-step-pill" id="pill-step-3">🌸 3. Wipe</div>
+      <div class="spa-step-pill" id="pill-step-4">💖 4. Cream</div>
+    </div>
+
+    <div class="spa-instruction" id="spa-instruction">Step 1: Rub nail file across all nails!</div>
+
+    <div class="care-canvas-container" id="care-canvas-box">
+      <div id="care-hand-wrap" class="care-hand-wrap">
+        <!-- 1. Base Hand Image -->
+        <img id="care-hand-img" class="care-hand-img" src="../Assets/Art/Hands/hand_fair.png">
+
+        <!-- 2. Jagged / Overgrown Nail Tips Layer (Step 1: Worn down as player files) -->
+        <div id="spa-nail-tips-layer" class="spa-overlay-layer"></div>
+
+        <!-- 3. Mud / Dirt Smudges Layer (Step 2: Cleaned away as player soaps) -->
+        <svg id="spa-dirt-layer" class="spa-overlay-layer" viewBox="0 0 253 380">
+          <defs>
+            <filter id="dirt-blur">
+              <feGaussianBlur stdDeviation="2"/>
+            </filter>
+          </defs>
+        </svg>
+
+        <!-- 4. Soapy Foam & Lather Suds Layer (Step 2 adds, Step 3 wipes away) -->
+        <div id="spa-foam-layer" class="spa-overlay-layer"></div>
+
+        <!-- 5. Floating Particles (nail dust filings, bubbles, sparkles, cream) -->
+        <div id="spa-bubbles-container" class="spa-particles-container"></div>
+      </div>
+
+      <!-- Active Hand Care Tool -->
+      <img id="care-tool-active" class="care-tool" src="../Assets/Art/HandCare/tool_nail_file.png">
+    </div>
+
+    <!-- Progress Bar with Glow & Percentage -->
+    <div class="care-progress-wrap">
+      <div id="care-progress" class="care-progress-fill"></div>
+      <span id="care-progress-pct" class="care-progress-label">0%</span>
+    </div>
+
+    <button class="btn-large btn-play" id="btn-next-spa-step" style="display:none; font-size:16px; padding:8px 24px; margin-bottom:12px;">Next Step ➡️</button>
+  </div>
+
+  <!-- SCREEN 4: NAIL STUDIO (MAIN PLAY) -->
+  <div id="screen-studio" class="screen">
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-studio-back">⬅️</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-circle" id="btn-undo" title="Undo">↩️</button>
+        <button class="btn-circle" id="btn-redo" title="Redo">↪️</button>
+        <button class="btn-circle" id="btn-reset" title="Clear Nail">🗑️</button>
+        <button class="btn-circle" id="btn-apply-all" title="Apply to All Nails">✨ All</button>
+        <button class="btn-circle" id="btn-uv-lamp" title="UV Gel Dryer Lamp" style="background:#8A2BE2; color:white; border-color:#7B1FA2;">💡</button>
+      </div>
+      <button class="btn-circle accent" id="btn-camera" title="Finish Design">📸</button>
+    </div>
+
+    <div class="studio-stage">
+      <!-- UV Gel Lamp Dryer -->
+      <div id="uv-lamp-overlay" class="uv-lamp-overlay">
+        <div class="uv-lamp-hood">
+          <div class="uv-countdown-text" id="uv-countdown-text">✨ CURING GEL: 4s</div>
+          <div class="uv-progress-wrap">
+            <div id="uv-progress-fill" class="uv-progress-fill"></div>
+          </div>
+          <div class="uv-lamp-light-beam"></div>
+        </div>
+      </div>
+
+      <div class="hand-container" id="hand-canvas-wrap">
+        <div id="sticker-place-hint">👆 Tap nail to place!</div>
+        <!-- Hand Base Graphic -->
+        <img id="studio-hand-img" class="base-hand-svg" src="../Assets/Art/Hands/hand_fair.png">
+        
+        <!-- 5 Individual Fingernails — perfectly aligned to real organic Pazu hand -->
+        <!-- Pinky -->
+        <div class="nail-anchor" id="nail-pinky" data-id="pinky" style="left: 11px; top: 68px; --rot: -18deg; --scale: 0.82;"></div>
+        <!-- Ring -->
+        <div class="nail-anchor" id="nail-ring" data-id="ring" style="left: 74px; top: 10px; --rot: -5deg; --scale: 0.98;"></div>
+        <!-- Middle -->
+        <div class="nail-anchor selected" id="nail-middle" data-id="middle" style="left: 126px; top: -20px; --rot: 0deg; --scale: 1.02;"></div>
+        <!-- Index -->
+        <div class="nail-anchor" id="nail-index" data-id="index" style="left: 192px; top: 1px; --rot: 5deg; --scale: 0.98;"></div>
+        <!-- Thumb -->
+        <div class="nail-anchor" id="nail-thumb" data-id="thumb" style="left: 256px; top: 138px; --rot: 28deg; --scale: 1.02;"></div>
+
+        <!-- Ring Accessory Mount -->
+        <img id="mount-ring" class="accessory-layer" style="display:none; left:74px; top:145px; width:44px;">
+        <!-- Bracelet Accessory Mount (wrist) -->
+        <img id="mount-bracelet" class="accessory-layer" style="display:none; left:65px; top:375px; width:190px;">
+      </div>
+    </div>
+
+    <!-- Studio Tools Drawer -->
+    <div class="studio-tools">
+      <div class="tool-tabs">
+        <button class="tab-btn active" data-tab="polish">💅 Colors</button>
+        <button class="tab-btn" data-tab="shapes">✂️ Shapes</button>
+        <button class="tab-btn" data-tab="gradients">🌈 Gradients</button>
+        <button class="tab-btn" data-tab="textures">✨ Textures</button>
+        <button class="tab-btn" data-tab="patterns">🏁 Patterns</button>
+        <button class="tab-btn" data-tab="stickers">🦄 Stickers</button>
+        <button class="tab-btn" data-tab="gems">💎 Gems</button>
+        <button class="tab-btn" data-tab="accessories">💍 Jewelry</button>
+      </div>
+      <div class="palette-scroll" id="palette-tray">
+        <!-- Injected via Javascript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: RESULT / PRESENTATION -->
+  <div id="screen-result" class="screen">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-result-back">⬅️</button>
+      <h2>Fabulous Nails!</h2>
+      <button class="btn-circle" id="btn-cycle-bg">🖼️</button>
+    </div>
+    <div class="result-hand-preview">
+      <div class="result-card" id="result-capture-target">
+        <div style="position:relative; width: 260px; height: 380px;" id="result-stage-copy"></div>
+        <p style="margin-top:12px; font-weight:700; color:#D63384;">Beauty Studio Collection</p>
+      </div>
+    </div>
+    <div style="display:flex; gap:12px; margin-bottom:16px;">
+      <button class="btn-large btn-play" id="btn-save-gallery" style="font-size:18px; padding:12px 20px;">💾 Save</button>
+      <button class="btn-large btn-gallery" id="btn-share-design" style="font-size:18px; padding:12px 20px;">📤 Share</button>
+      <button class="btn-large btn-settings" id="btn-home-menu" style="font-size:18px; padding:12px 20px;">🏠 Home</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: GALLERY -->
+  <div id="screen-gallery" class="screen">
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-gallery-back">⬅️</button>
+      <h2>My Nail Designs</h2>
+      <div style="width:44px;"></div>
+    </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Injected designs -->
+    </div>
+  </div>
+
+  <!-- SCREEN 7: SETTINGS & CHILD SAFETY -->
+  <div id="screen-settings" class="screen">
+    <div class="top-bar">
+      <button class="btn-circle" id="btn-settings-back">⬅️</button>
+      <h2>Settings</h2>
+      <div style="width:44px;"></div>
+    </div>
+    <div style="padding: 24px; display:flex; flex-direction:column; gap:20px;">
+      <div style="background:white; padding:16px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+        <label style="display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:700;">
+          Background Music
+          <input type="checkbox" id="chk-music" checked style="width:24px; height:24px;">
+        </label>
+        <hr style="margin:12px 0; border:none; border-top:1px solid #FFE4EC;">
+        <label style="display:flex; justify-content:space-between; align-items:center; font-size:18px; font-weight:700;">
+          Sound Effects (SFX)
+          <input type="checkbox" id="chk-sfx" checked style="width:24px; height:24px;">
+        </label>
+      </div>
+
+      <div style="background:white; padding:16px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.06); display:flex; flex-direction:column; gap:12px;">
+        <button id="btn-open-privacy" class="btn-large btn-settings" style="font-size:16px; padding:10px;">🔒 Privacy Policy</button>
+        <button id="btn-open-terms" class="btn-large btn-gallery" style="font-size:16px; padding:10px;">📄 Terms of Service</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARENTAL GATE MODAL -->
+  <div id="parental-gate-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>Parental Check</h3>
+      <p style="font-size:14px; color:#6C757D;" id="gate-question">Please ask a parent to answer:</p>
+      <input type="number" id="gate-answer" placeholder="Your Answer">
+      <div style="display:flex; gap:10px;">
+        <button class="btn-large btn-play" id="btn-gate-ok" style="flex:1; font-size:16px; padding:10px;">Submit</button>
+        <button class="btn-large btn-settings" id="btn-gate-cancel" style="flex:1; font-size:16px; padding:10px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Interactive Engine Logic -->
+<script>
+  // Web Audio Synthesizer
+  const AudioEngine = {
+    ctx: null,
+    sfxEnabled: true,
+    musicEnabled: true,
+    init() {
+      if (!this.ctx) {
+        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    },
+    playClick() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
+    },
+    playSparkle() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const freqs = [1046.5, 1318.5, 1567.98, 2093.0];
+      freqs.forEach((f, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(f, this.ctx.currentTime + idx * 0.05);
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime + idx * 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + idx * 0.05 + 0.1);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + idx * 0.05);
+        osc.stop(this.ctx.currentTime + idx * 0.05 + 0.1);
+      });
+    },
+    playBrush() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(700, this.ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.2);
+    },
+    playFile() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+      osc.frequency.linearRampToValueAtTime(120, this.ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.1);
+    },
+    playBubble() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(550 + Math.random() * 300, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(1300, this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
+    },
+    playCream() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(260, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(420, this.ctx.currentTime + 0.12);
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.12);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.12);
+    },
+    playUVHum() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 2.5);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 2.5);
+    },
+    playShutter() {
+      if (!this.sfxEnabled) return;
+      this.init();
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 0.08);
+      gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.08);
+    }
+  };
+
+  // State Management
+  const GameState = {
+    skinTone: 'fair',
+    selectedNail: 'middle',
+    backgroundIndex: 0,
+    backgrounds: ['bg_salon_pink', 'bg_rainbow_cloud', 'bg_lavender_glitter', 'bg_mint_studio', 'bg_peach_sparkle'],
+    nails: {
+      thumb:  { shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: [] },
+      index:  { shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: [] },
+      middle: { shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: [] },
+      ring:   { shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: [] },
+      pinky:  { shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: [] }
+    },
+    ring: null,
+    bracelet: null,
+    history: [],
+    redoStack: [],
+    savedGallery: []
+  };
+
+  // Palette Catalogs
+  const POLISH_COLORS = [
+    // Pastels
+    { name: 'Baby Pink',       hex: '#FFC0CB' }, { name: 'Cotton Candy', hex: '#FFB7D5' },
+    { name: 'Lavender',        hex: '#D8BAFF' }, { name: 'Mint Dream',   hex: '#B2F5EA' },
+    { name: 'Peach Sorbet',    hex: '#FFDAB9' }, { name: 'Sky Blue',     hex: '#BEE3F8' },
+    { name: 'Buttercup',       hex: '#FFF5A0' }, { name: 'Lilac Mist',   hex: '#EBD7F7' },
+    // Neons & Bold
+    { name: 'Electric Pink',   hex: '#FF1493' }, { name: 'Hot Magenta',  hex: '#FF00AA' },
+    { name: 'Coral Crush',     hex: '#FF6B6B' }, { name: 'Laser Cyan',   hex: '#00FFFF' },
+    { name: 'Neon Green',      hex: '#39FF14' }, { name: 'Electric Blue', hex: '#0080FF' },
+    { name: 'Neon Purple',     hex: '#CC00FF' }, { name: 'Sunset Orange', hex: '#FF8C00' },
+    // Classy
+    { name: 'Cherry Pop',      hex: '#D53F8C' }, { name: 'Ruby Red',     hex: '#E53E3E' },
+    { name: 'Rose Gold',       hex: '#B76E79' }, { name: 'Dusty Rose',   hex: '#C4848A' },
+    { name: 'Plum',            hex: '#7B2D8B' }, { name: 'Wine',         hex: '#8B0000' },
+    { name: 'Blush Nude',      hex: '#F7C5B0' }, { name: 'Warm Nude',    hex: '#D4A88A' },
+    // Metallics
+    { name: 'Gold Glitter',    hex: '#FFD700' }, { name: 'Rose Gold Met', hex: '#E8A87C' },
+    { name: 'Silver Shimmer',  hex: '#C0C0C0' }, { name: 'Mermaid Aqua',  hex: '#40E0D0' },
+    // Neutrals
+    { name: 'Pure White',      hex: '#FFFFFF' }, { name: 'Midnight Black', hex: '#1A1A2E' }
+  ];
+
+  const NAIL_SHAPES = ['round', 'square', 'oval', 'almond', 'coffin', 'stiletto'];
+
+  const STICKER_LIST = [
+    // Animals & cute
+    { emoji: '🐱', label: 'Kitty'      }, { emoji: '🐰', label: 'Bunny'    },
+    { emoji: '🐼', label: 'Panda'      }, { emoji: '🦄', label: 'Unicorn'  },
+    { emoji: '🐸', label: 'Frog'       }, { emoji: '🐨', label: 'Koala'    },
+    // Food & sweet
+    { emoji: '🧁', label: 'Cupcake'    }, { emoji: '🍓', label: 'Strawberry'},
+    { emoji: '🍭', label: 'Lollipop'   }, { emoji: '🍩', label: 'Donut'    },
+    { emoji: '🍦', label: 'Ice Cream'  }, { emoji: '🫧', label: 'Bubble'   },
+    // Nature & flowers
+    { emoji: '🌸', label: 'Sakura'     }, { emoji: '🌺', label: 'Hibiscus' },
+    { emoji: '🌈', label: 'Rainbow'    }, { emoji: '⭐', label: 'Star'     },
+    { emoji: '🌙', label: 'Moon'       }, { emoji: '☁️', label: 'Cloud'    },
+    // Fashion & glam
+    { emoji: '💎', label: 'Diamond'    }, { emoji: '👑', label: 'Crown'    },
+    { emoji: '🎀', label: 'Bow'        }, { emoji: '🦋', label: 'Butterfly'},
+    { emoji: '💕', label: 'Hearts'     }, { emoji: '✨', label: 'Sparkle'  },
+  ];
+
+  const GEMS_LIST = [
+    'gem_diamond_round', 'gem_heart_ruby', 'gem_emerald_cut', 'gem_pearl_round', 'gem_star_crystal'
+  ];
+
+  const RINGS_LIST = [
+    'ring_gold_solitaire', 'ring_princess_crown', 'ring_pearl_band', 'ring_kitty_ears', 'ring_heart_gem'
+  ];
+
+  const BRACELETS_LIST = [
+    'bracelet_pearl_bangle', 'bracelet_gold_charms', 'bracelet_rainbow_beads', 'bracelet_ribbon_corsage'
+  ];
+
+  // DOM Navigation
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    AudioEngine.playClick();
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // Render Nails
+  function renderAllNails() {
+    Object.keys(GameState.nails).forEach(id => {
+      const nail = GameState.nails[id];
+      const el = document.getElementById(`nail-${id}`);
+      if (!el) return;
+
+      el.classList.toggle('selected', GameState.selectedNail === id);
+
+      // Render anatomical nail shape SVG & Clipping Mask
+      let shapePath = getShapeSVGPath(nail.shape);
+      
+      let fillStyle = nail.color;
+      if (nail.gradient) {
+        fillStyle = `url(#grad-${id})`;
+      }
+
+      // 3D Drop Shadows on stickers & gems
+      let stickersHTML = nail.stickers.map((st, i) => `
+        <text x="${st.x}" y="${st.y}" text-anchor="middle" dominant-baseline="central"
+          font-size="20" filter="url(#element-3d-shadow-${id})"
+          style="user-select:none; cursor:pointer;"
+          onclick="GameState.nails['${id}'].stickers.splice(${i},1); renderAllNails();"
+        >${st.emoji || '⭐'}</text>
+      `).join('');
+
+      let gemsHTML = nail.gems.map((gm, i) => `
+        <g filter="url(#gem-3d-shadow-${id})">
+          <image href="../Assets/Art/Gems/${gm.id}.png" x="${gm.x - 12}" y="${gm.y - 12}" width="24" height="24" />
+          <circle cx="${gm.x - 3}" cy="${gm.y - 4}" r="1.5" fill="#FFFFFF" opacity="0.85" />
+        </g>
+      `).join('');
+
+      // Pattern / Stencil Overlay
+      let patternHTML = '';
+      if (nail.pattern === 'french') {
+        patternHTML = `
+          <path d="M 4 24 C 10 29, 34 29, 40 24 L 40 0 L 4 0 Z" fill="#FFFFFF" opacity="0.94"/>
+          <path d="M 4 24 C 10 29, 34 29, 40 24" stroke="rgba(255,182,193,0.7)" stroke-width="1.2" fill="none"/>
+        `;
+      } else if (nail.pattern === 'polka') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-polka-${id})"/>`;
+      } else if (nail.pattern === 'stripes') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-stripes-${id})"/>`;
+      } else if (nail.pattern === 'hearts') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-hearts-${id})"/>`;
+      } else if (nail.pattern === 'stars') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-stars-${id})"/>`;
+      } else if (nail.pattern === 'cow') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-cow-${id})"/>`;
+      } else if (nail.pattern === 'waves') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-waves-${id})"/>`;
+      } else if (nail.pattern === 'marble') {
+        patternHTML = `
+          <rect width="44" height="70" fill="white" opacity="0.18"/>
+          <rect width="44" height="70" fill="url(#pat-marble-${id})" opacity="0.75"/>
+        `;
+      } else if (nail.pattern === 'galaxy') {
+        patternHTML = `
+          <rect width="44" height="70" fill="url(#pat-galaxy-${id})" opacity="0.80"/>
+        `;
+      } else if (nail.pattern === 'floral') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-floral-${id})" opacity="0.90"/>`;
+      } else if (nail.pattern === 'ombre') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-ombre-${id})" style="mix-blend-mode:overlay;" opacity="0.70"/>`;
+      } else if (nail.pattern === 'leopard') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-leopard-${id})" opacity="0.85"/>`;
+      } else if (nail.pattern === 'plaid') {
+        patternHTML = `<rect width="44" height="70" fill="url(#pat-plaid-${id})" opacity="0.75"/>`;
+      }
+
+      // Texture Shader Overlays
+      let textureLayer = '';
+      if (nail.effect === 'glitter') {
+        textureLayer = `
+          <rect width="44" height="70" fill="url(#glitter-dense-pat)" opacity="0.85" style="mix-blend-mode: screen;"/>
+          <rect width="44" height="70" fill="url(#glitter-holo-pat)" opacity="0.6"/>
+        `;
+      } else if (nail.effect === 'matte') {
+        textureLayer = `
+          <rect width="44" height="70" fill="url(#matte-velvet)" opacity="0.5" style="mix-blend-mode: overlay;"/>
+        `;
+      } else if (nail.effect === 'pearl') {
+        textureLayer = `
+          <rect width="44" height="70" fill="url(#pearl-sheen)" opacity="0.65" style="mix-blend-mode: overlay;"/>
+        `;
+      }
+
+      // Specular High-Gloss Highlights (Disabled for matte)
+      let glossHighlights = '';
+      if (nail.effect !== 'matte') {
+        glossHighlights = `
+          <!-- Studio Dual-Beam Curved Specular Highlight -->
+          <path d="M 11 10 Q 14 34 16 56" stroke="url(#specular-gloss-beam)" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+          <!-- Secondary Soft Rim Specular Highlight -->
+          <path d="M 7 14 Q 9 36 10 50" stroke="rgba(255,255,255,0.4)" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+          <!-- Apex Gloss Glint Bulb -->
+          <ellipse cx="14" cy="22" rx="2.5" ry="5.5" fill="#FFFFFF" opacity="0.8" transform="rotate(-10 14 22)"/>
+          <!-- Free Edge Bevel Light Catch -->
+          <path d="${shapePath}" fill="none" stroke="url(#free-edge-bevel)" stroke-width="1.5" opacity="0.65"/>
+        `;
+      }
+
+      el.innerHTML = `
+        <svg class="nail-mask-svg" viewBox="0 0 44 70">
+          <defs>
+            <clipPath id="clip-${id}">
+              <path d="${shapePath}"/>
+            </clipPath>
+
+            ${nail.gradient ? `
+              <linearGradient id="grad-${id}" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="${nail.color}"/>
+                <stop offset="100%" stop-color="${nail.gradient}"/>
+              </linearGradient>
+            ` : ''}
+
+            <!-- 3D C-Curve Lateral Apex Shading (Horizontal Volume Dome) -->
+            <linearGradient id="apex-3d-${id}" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#000" stop-opacity="0.45"/>
+              <stop offset="12%" stop-color="#000" stop-opacity="0.12"/>
+              <stop offset="28%" stop-color="#FFF" stop-opacity="0.1"/>
+              <stop offset="38%" stop-color="#FFF" stop-opacity="0.45"/>
+              <stop offset="48%" stop-color="#FFF" stop-opacity="0.2"/>
+              <stop offset="72%" stop-color="#000" stop-opacity="0.05"/>
+              <stop offset="88%" stop-color="#000" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+            </linearGradient>
+
+            <!-- 3D Longitudinal Arch & Cuticle Inset Shadow (Vertical Depth) -->
+            <linearGradient id="cuticle-arch-${id}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFF" stop-opacity="0.25"/>
+              <stop offset="50%" stop-color="#000" stop-opacity="0"/>
+              <stop offset="85%" stop-color="#3b0a1a" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="#1f020c" stop-opacity="0.6"/>
+            </linearGradient>
+
+            <!-- Specular Gloss Light Beam -->
+            <linearGradient id="specular-gloss-beam" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+              <stop offset="45%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+              <stop offset="85%" stop-color="#FFFFFF" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+            </linearGradient>
+
+            <!-- Free-edge Bevel Light -->
+            <linearGradient id="free-edge-bevel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.8"/>
+              <stop offset="30%" stop-color="#FFFFFF" stop-opacity="0.2"/>
+              <stop offset="70%" stop-color="#000000" stop-opacity="0"/>
+              <stop offset="100%" stop-color="#000000" stop-opacity="0.6"/>
+            </linearGradient>
+
+            <!-- Realistic Lunula (Nail half-moon) -->
+            <radialGradient id="lunula-grad-${id}" cx="50%" cy="100%" r="65%">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.6"/>
+              <stop offset="60%" stop-color="#FFF5F7" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#FFF5F7" stop-opacity="0"/>
+            </radialGradient>
+
+            <!-- Realistic Dense Glitter Pattern -->
+            <pattern id="glitter-dense-pat" width="8" height="8" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.1" fill="#FFFFFF" opacity="0.9"/>
+              <circle cx="6" cy="3" r="0.8" fill="#FFD700" opacity="0.95"/>
+              <circle cx="4" cy="6" r="1.2" fill="#FF69B4" opacity="0.85"/>
+              <circle cx="7" cy="7" r="0.6" fill="#00FFFF" opacity="0.9"/>
+              <polygon points="2,6 3,5 4,6 3,7" fill="#FFFFFF" opacity="0.8"/>
+            </pattern>
+
+            <pattern id="glitter-holo-pat" width="12" height="12" patternUnits="userSpaceOnUse">
+              <circle cx="3" cy="9" r="1.4" fill="#FFF" opacity="0.9"/>
+              <circle cx="9" cy="2" r="1" fill="#FFB6C1" opacity="0.8"/>
+              <polygon points="9,9 10,8 11,9 10,10" fill="#FFD700" opacity="0.85"/>
+            </pattern>
+
+            <!-- Matte Velvet Pattern -->
+            <radialGradient id="matte-velvet" cx="40%" cy="40%" r="70%">
+              <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.3"/>
+              <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+              <stop offset="100%" stop-color="#000000" stop-opacity="0.25"/>
+            </radialGradient>
+
+            <!-- Pearl Iridescent Sheen -->
+            <linearGradient id="pearl-sheen" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#FFB6C1" stop-opacity="0.5"/>
+              <stop offset="35%" stop-color="#E0FFFF" stop-opacity="0.6"/>
+              <stop offset="65%" stop-color="#FFFACD" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#FFD1DC" stop-opacity="0.5"/>
+            </linearGradient>
+
+            <!-- 3D Element Drop Shadow (Stickers) -->
+            <filter id="element-3d-shadow-${id}" x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow dx="0.8" dy="1.6" stdDeviation="1.2" flood-color="#000000" flood-opacity="0.35"/>
+            </filter>
+
+            <!-- 3D Gem Drop Shadow -->
+            <filter id="gem-3d-shadow-${id}" x="-40%" y="-40%" width="180%" height="180%">
+              <feDropShadow dx="1.2" dy="2.2" stdDeviation="1.8" flood-color="#000000" flood-opacity="0.45"/>
+            </filter>
+
+            <!-- Pattern Stencil Definitions -->
+            <pattern id="pat-polka-${id}" width="10" height="10" patternUnits="userSpaceOnUse">
+              <circle cx="5" cy="5" r="2.2" fill="#FFFFFF" opacity="0.9"/>
+            </pattern>
+            <pattern id="pat-stripes-${id}" width="12" height="12" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+              <rect width="4.5" height="12" fill="#FFFFFF" opacity="0.88"/>
+            </pattern>
+            <pattern id="pat-hearts-${id}" width="14" height="14" patternUnits="userSpaceOnUse">
+              <path d="M 7 4 Q 7 2, 5.5 2 Q 4 2, 4 4 Q 4 6, 7 8 Q 10 6, 10 4 Q 10 2, 8.5 2 Q 7 2, 7 4 Z" fill="#FFFFFF" opacity="0.92"/>
+            </pattern>
+            <pattern id="pat-stars-${id}" width="16" height="16" patternUnits="userSpaceOnUse">
+              <polygon points="8,2 9.5,5.5 13,5.5 10,8 11.5,12 8,9.5 4.5,12 6,8 3,5.5 6.5,5.5" fill="#FFFFFF" opacity="0.9"/>
+            </pattern>
+            <pattern id="pat-cow-${id}" width="18" height="18" patternUnits="userSpaceOnUse">
+              <path d="M 3 3 Q 7 1, 6 5 Q 5 8, 1 6 Z" fill="#FFFFFF" opacity="0.92"/>
+              <path d="M 12 11 Q 16 9, 15 14 Q 11 16, 10 12 Z" fill="#FFFFFF" opacity="0.92"/>
+            </pattern>
+            <pattern id="pat-waves-${id}" width="20" height="10" patternUnits="userSpaceOnUse">
+              <path d="M 0 5 Q 5 1, 10 5 T 20 5" stroke="#FFFFFF" stroke-width="2.2" fill="none" opacity="0.88"/>
+            </pattern>
+
+            <!-- Marble – feTurbulence -->
+            <filter id="marble-flt-${id}" x="0" y="0" width="100%" height="100%">
+              <feTurbulence type="turbulence" baseFrequency="0.012 0.065" numOctaves="4" seed="3" result="noise"/>
+              <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+              <feBlend in="SourceGraphic" in2="gray" mode="multiply" result="blend"/>
+            </filter>
+            <linearGradient id="pat-marble-${id}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.0"/>
+              <stop offset="45%"  stop-color="#d0d0d0" stop-opacity="0.6"/>
+              <stop offset="55%"  stop-color="#ffffff" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#b0b0b0" stop-opacity="0.3"/>
+            </linearGradient>
+
+            <!-- Galaxy -->
+            <radialGradient id="pat-galaxy-${id}" cx="40%" cy="35%" r="80%">
+              <stop offset="0%"   stop-color="#6600cc" stop-opacity="0.5"/>
+              <stop offset="40%"  stop-color="#000055" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#110022" stop-opacity="0.7"/>
+            </radialGradient>
+
+            <!-- Floral -->
+            <pattern id="pat-floral-${id}" width="14" height="14" patternUnits="userSpaceOnUse">
+              <circle cx="7" cy="7" r="2.2" fill="#FFFFFF" opacity="0.9"/>
+              <path d="M7 2 Q9 5 7 7 Q5 5 7 2Z" fill="#FFD1DC" opacity="0.85"/>
+              <path d="M12 7 Q9 9 7 7 Q9 5 12 7Z" fill="#FFD1DC" opacity="0.85"/>
+              <path d="M7 12 Q5 9 7 7 Q9 9 7 12Z" fill="#FFD1DC" opacity="0.85"/>
+              <path d="M2 7 Q5 5 7 7 Q5 9 2 7Z" fill="#FFD1DC" opacity="0.85"/>
+            </pattern>
+
+            <!-- Ombre -->
+            <linearGradient id="pat-ombre-${id}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.6"/>
+              <stop offset="50%"  stop-color="#ffffff" stop-opacity="0.0"/>
+              <stop offset="100%" stop-color="#000000" stop-opacity="0.3"/>
+            </linearGradient>
+
+            <!-- Leopard -->
+            <pattern id="pat-leopard-${id}" width="16" height="16" patternUnits="userSpaceOnUse">
+              <ellipse cx="4" cy="4" rx="2.5" ry="1.8" fill="#000" opacity="0.5"/>
+              <ellipse cx="12" cy="10" rx="2.2" ry="1.6" fill="#000" opacity="0.5"/>
+              <ellipse cx="4" cy="13" rx="1.8" ry="1.2" fill="#000" opacity="0.4"/>
+              <ellipse cx="13" cy="2" rx="1.5" ry="2" fill="#000" opacity="0.4"/>
+            </pattern>
+
+            <!-- Plaid -->
+            <pattern id="pat-plaid-${id}" width="12" height="12" patternUnits="userSpaceOnUse">
+              <rect width="12" height="12" fill="none"/>
+              <rect x="0" y="4" width="12" height="4" fill="#FFFFFF" opacity="0.4"/>
+              <rect x="4" y="0" width="4" height="12" fill="#FFFFFF" opacity="0.4"/>
+              <rect x="4" y="4" width="4" height="4" fill="#FFFFFF" opacity="0.5"/>
+            </pattern>
+          </defs>
+
+          <g clip-path="url(#clip-${id})">
+            <!-- 1. Polish Base Color -->
+            <path d="${shapePath}" fill="${fillStyle}"/>
+
+            <!-- 1.5. Pattern Stencil -->
+            ${patternHTML}
+
+            <!-- 2. Lunula (Half-moon at base of nail) -->
+            <ellipse cx="22" cy="65" rx="10" ry="8" fill="url(#lunula-grad-${id})"/>
+
+            <!-- 3. Texture / Finish Overlays -->
+            ${textureLayer}
+
+            <!-- 4. 3D Lateral C-Curve Apex Shading (Horizontal Volume Dome) -->
+            <path d="${shapePath}" fill="url(#apex-3d-${id})" style="mix-blend-mode: overlay;"/>
+
+            <!-- 5. 3D Longitudinal Arch & Cuticle Inset Shadow (Vertical Depth) -->
+            <path d="${shapePath}" fill="url(#cuticle-arch-${id})" style="mix-blend-mode: multiply;"/>
+
+            <!-- 6. Stickers & Gems (Cast realistic shadows) -->
+            ${stickersHTML}
+            ${gemsHTML}
+
+            <!-- 7. Gel Top Coat High-Gloss Specular Reflections -->
+            ${glossHighlights}
+          </g>
+
+          <!-- 8. Deep Cuticle Pocket Margin (Integrates nail naturally into finger skin) -->
+          <path d="${shapePath}" fill="none" stroke="rgba(40, 5, 15, 0.45)" stroke-width="1.8" opacity="0.85"/>
+          <!-- Subtle Top Bevel Highlight Rim -->
+          <path d="${shapePath}" fill="none" stroke="rgba(255, 255, 255, 0.4)" stroke-width="0.8"/>
+        </svg>
+      `;
+    });
+
+    // Update accessories
+    const ringEl = document.getElementById('mount-ring');
+    if (GameState.ring) {
+      ringEl.src = `../Assets/Art/Accessories/Rings/${GameState.ring}.png`;
+      ringEl.style.display = 'block';
+    } else {
+      ringEl.style.display = 'none';
+    }
+
+    const brEl = document.getElementById('mount-bracelet');
+    if (GameState.bracelet) {
+      brEl.src = `../Assets/Art/Accessories/Bracelets/${GameState.bracelet}.png`;
+      brEl.style.display = 'block';
+    } else {
+      brEl.style.display = 'none';
+    }
+
+    // Hand skin tone
+    document.getElementById('studio-hand-img').src = `../Assets/Art/Hands/hand_${GameState.skinTone}.png`;
+  }
+
+  function getShapeSVGPath(shape) {
+    switch (shape) {
+      case 'round':
+        // Soft rounded tip with curved anatomical cuticle bed
+        return "M 5 66 C 4 45, 4 24, 11 14 C 16 7, 28 7, 33 14 C 40 24, 40 45, 39 66 C 31 70, 13 70, 5 66 Z";
+      case 'square':
+        // Soft square with rounded corners and curved cuticle bed
+        return "M 5 66 L 5 13 Q 5 7, 11 7 L 33 7 Q 39 7, 39 13 L 39 66 C 31 70, 13 70, 5 66 Z";
+      case 'oval':
+        // Natural elegant oval curve
+        return "M 5 66 C 4 45, 5 26, 11 12 C 16 2, 28 2, 33 12 C 39 26, 40 45, 39 66 C 31 70, 13 70, 5 66 Z";
+      case 'almond':
+        // Slender tapered almond shape with soft pointed tip
+        return "M 5 66 C 4 48, 8 28, 15 14 C 18 8, 22 3, 22 3 C 22 3, 26 8, 29 14 C 36 28, 40 48, 39 66 C 31 70, 13 70, 5 66 Z";
+      case 'coffin':
+        // Ballerina coffin shape with crisp bevel flat tip
+        return "M 5 66 C 5 46, 9 26, 13 8 L 31 8 C 35 26, 39 46, 39 66 C 31 70, 13 70, 5 66 Z";
+      case 'stiletto':
+        // Sharp glamorous stiletto talon
+        return "M 5 66 C 6 45, 11 25, 22 2 C 33 25, 38 45, 39 66 C 31 70, 13 70, 5 66 Z";
+      default:
+        return "M 5 66 C 4 48, 8 28, 15 14 C 18 8, 22 3, 22 3 C 22 3, 26 8, 29 14 C 36 28, 40 48, 39 66 C 31 70, 13 70, 5 66 Z";
+    }
+  }
+
+  // History & Undo/Redo
+  function pushState() {
+    GameState.history.push(JSON.parse(JSON.stringify(GameState.nails)));
+    GameState.redoStack = [];
+  }
+
+  function undo() {
+    if (GameState.history.length === 0) return;
+    GameState.redoStack.push(JSON.parse(JSON.stringify(GameState.nails)));
+    GameState.nails = GameState.history.pop();
+    renderAllNails();
+    AudioEngine.playClick();
+  }
+
+  function redo() {
+    if (GameState.redoStack.length === 0) return;
+    GameState.history.push(JSON.parse(JSON.stringify(GameState.nails)));
+    GameState.nails = GameState.redoStack.pop();
+    renderAllNails();
+    AudioEngine.playClick();
+  }
+
+  // Palette Populator
+  function loadPalette(tab) {
+    const tray = document.getElementById('palette-tray');
+    tray.innerHTML = '';
+
+    if (tab === 'polish') {
+      // ── Custom hue picker ──────────────────────────────
+      const pickerRow = document.createElement('div');
+      pickerRow.className = 'hue-row';
+      pickerRow.innerHTML = `
+        <span style="font-size:12px;font-weight:700;color:#9C4D76;white-space:nowrap;">🎨 Pick:</span>
+        <input type="range" id="hue-slider" min="0" max="360" value="330" style="flex:1;height:10px;border-radius:6px;cursor:pointer;border:none;outline:none;background:linear-gradient(to right,hsl(0,80%,65%),hsl(60,80%,65%),hsl(120,80%,65%),hsl(180,80%,65%),hsl(240,80%,65%),hsl(300,80%,65%),hsl(360,80%,65%));-webkit-appearance:none;">
+        <div class="hue-preview" id="hue-preview" style="background:hsl(330,80%,65%);"></div>
+      `;
+      tray.appendChild(pickerRow);
+      const hueSlider  = pickerRow.querySelector('#hue-slider');
+      const huePreview = pickerRow.querySelector('#hue-preview');
+      function applyHue(h) {
+        const c = `hsl(${h},80%,65%)`;
+        huePreview.style.background = c;
+        pushState();
+        GameState.nails[GameState.selectedNail].color = c;
+        GameState.nails[GameState.selectedNail].gradient = null;
+        renderAllNails();
+        spawnBrushAnim();
+        AudioEngine.playBrush();
+      }
+      hueSlider.oninput = () => applyHue(hueSlider.value);
+      huePreview.onclick = () => applyHue(hueSlider.value);
+
+      // ── Preset swatches ───────────────────────────────
+      POLISH_COLORS.forEach(c => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.style.background = c.hex;
+        item.title = c.name;
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].color = c.hex;
+          GameState.nails[GameState.selectedNail].gradient = null;
+          renderAllNails();
+          spawnBrushAnim();
+          AudioEngine.playBrush();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'shapes') {
+      NAIL_SHAPES.forEach(sh => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.style.background = '#FFF0F5';
+        item.innerHTML = `<img src="../Assets/Art/Nails/nail_${sh}.png">`;
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].shape = sh;
+          renderAllNails();
+          AudioEngine.playClick();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'gradients') {
+      const grads = [
+        { from: '#FFFFFF', to: '#FF69B4', label: 'Pink Fade'    },
+        { from: '#FFFFFF', to: '#B388FF', label: 'Purple Haze'  },
+        { from: '#FFFFFF', to: '#80D8FF', label: 'Sky Fade'     },
+        { from: '#FFFFFF', to: '#FFD700', label: 'Gold Dip'     },
+        { from: '#FFFFFF', to: '#39FF14', label: 'Neon Glow'    },
+        { from: '#FF69B4', to: '#FFD700', label: 'Sunset'       },
+        { from: '#B388FF', to: '#FF85A2', label: 'Cotton Candy' },
+        { from: '#80D8FF', to: '#B388FF', label: 'Aurora'       },
+        { from: '#FFB347', to: '#FF69B4', label: 'Peach Blossom'},
+        { from: '#00FFFF', to: '#FF1493', label: 'Electric'     },
+      ];
+      grads.forEach(g => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.style.background = `linear-gradient(to bottom, ${g.from}, ${g.to})`;
+        item.title = g.label;
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].color    = g.from;
+          GameState.nails[GameState.selectedNail].gradient = g.to;
+          renderAllNails();
+          spawnBrushAnim();
+          AudioEngine.playBrush();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'textures') {
+      [
+        { id: 'glossy', label: '✨ 3D Gel Gloss', bg: 'linear-gradient(135deg, #FFFFFF, #FFB6C1)' },
+        { id: 'glitter', label: '💎 Sparkle Glitter', bg: 'linear-gradient(135deg, #FFE4E1, #FFD700)' },
+        { id: 'pearl', label: '🪞 Pearl Sheen', bg: 'linear-gradient(135deg, #E0FFFF, #FFD1DC)' },
+        { id: 'matte', label: '☁️ Soft Matte', bg: '#EDE7F6' }
+      ].forEach(tex => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.style.background = tex.bg;
+        item.style.width = '70px';
+        item.innerText = tex.label;
+        item.style.fontSize = '10px';
+        item.style.fontWeight = '700';
+        item.style.textAlign = 'center';
+        item.style.padding = '4px';
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].effect = tex.id;
+          renderAllNails();
+          AudioEngine.playSparkle();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'patterns') {
+      [
+        { id: 'none',    label: '🚫 Clean',      icon: '✨' },
+        { id: 'french',  label: '🤍 French Tip', icon: '💅' },
+        { id: 'polka',   label: '⚪ Polka Dots',  icon: '🫧' },
+        { id: 'stripes', label: '📐 Stripes',     icon: '💈' },
+        { id: 'hearts',  label: '💖 Hearts',      icon: '💕' },
+        { id: 'stars',   label: '⭐ Stars',       icon: '🌟' },
+        { id: 'cow',     label: '🐮 Cow Print',   icon: '🐾' },
+        { id: 'waves',   label: '🌊 Waves',       icon: '〰️' },
+        { id: 'marble',  label: '🪨 Marble',      icon: '🌫️' },
+        { id: 'galaxy',  label: '🌌 Galaxy',      icon: '✨' },
+        { id: 'floral',  label: '🌸 Floral',      icon: '🌺' },
+        { id: 'ombre',   label: '🌈 Ombre',       icon: '🎨' },
+        { id: 'leopard', label: '🐆 Leopard',     icon: '🐾' },
+        { id: 'plaid',   label: '🏁 Plaid',       icon: '🫧' }
+      ].forEach(pat => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.style.background = '#FFF5F8';
+        item.style.width = '70px';
+        item.innerHTML = `<div style="font-size:18px;">${pat.icon}</div><div style="font-size:10px; font-weight:700; color:#4A303D;">${pat.label}</div>`;
+        item.style.flexDirection = 'column';
+        item.style.gap = '2px';
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].pattern = pat.id;
+          renderAllNails();
+          AudioEngine.playBrush();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'stickers') {
+      // "Pick then place" mode
+      let pendingEmoji = null;
+      const hint = document.getElementById('sticker-place-hint');
+
+      STICKER_LIST.forEach(st => {
+        const item = document.createElement('div');
+        item.className = 'sticker-emoji-item';
+        item.textContent = st.emoji;
+        item.title = st.label;
+        item.onclick = () => {
+          pendingEmoji = st.emoji;
+          hint.style.display = 'block';
+          AudioEngine.playSparkle();
+          // Auto-place after 100 ms if user doesn't tap the nail
+          // (fallback: centre of selected nail)
+          setTimeout(() => {
+            if (pendingEmoji) {
+              pushState();
+              GameState.nails[GameState.selectedNail].stickers.push({
+                emoji: pendingEmoji, x: 22, y: 35
+              });
+              pendingEmoji = null;
+              hint.style.display = 'none';
+              renderAllNails();
+            }
+          }, 2000);
+        };
+        tray.appendChild(item);
+      });
+
+      // Allow tapping directly on the nail to place at that spot
+      document.querySelectorAll('.nail-anchor').forEach(anchor => {
+        anchor.addEventListener('pointerdown', (e) => {
+          if (!pendingEmoji) return;
+          const rect = anchor.getBoundingClientRect();
+          const nx = ((e.clientX - rect.left) / rect.width  * 44) | 0;
+          const ny = ((e.clientY - rect.top)  / rect.height * 70) | 0;
+          const nid = anchor.dataset.id;
+          pushState();
+          GameState.nails[nid].stickers.push({ emoji: pendingEmoji, x: nx, y: ny });
+          GameState.selectedNail = nid;
+          pendingEmoji = null;
+          hint.style.display = 'none';
+          renderAllNails();
+          AudioEngine.playSparkle();
+          e.stopPropagation();
+        }, { once: false });
+      });
+    } else if (tab === 'gems') {
+      GEMS_LIST.forEach(gm => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.innerHTML = `<img src="../Assets/Art/Gems/${gm}.png">`;
+        item.onclick = () => {
+          pushState();
+          GameState.nails[GameState.selectedNail].gems.push({
+            id: gm, x: 22, y: 48
+          });
+          renderAllNails();
+          AudioEngine.playSparkle();
+        };
+        tray.appendChild(item);
+      });
+    } else if (tab === 'accessories') {
+      RINGS_LIST.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.innerHTML = `<img src="../Assets/Art/Accessories/Rings/${r}.png">`;
+        item.onclick = () => {
+          GameState.ring = GameState.ring === r ? null : r;
+          renderAllNails();
+          AudioEngine.playSparkle();
+        };
+        tray.appendChild(item);
+      });
+      BRACELETS_LIST.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'palette-item';
+        item.innerHTML = `<img src="../Assets/Art/Accessories/Bracelets/${b}.png">`;
+        item.onclick = () => {
+          GameState.bracelet = GameState.bracelet === b ? null : b;
+          renderAllNails();
+          AudioEngine.playSparkle();
+        };
+        tray.appendChild(item);
+      });
+    }
+  }
+
+  // Event Listeners Initialization
+  window.addEventListener('DOMContentLoaded', () => {
+    // Menu
+    document.getElementById('btn-play').onclick = () => showScreen('screen-char');
+    document.getElementById('btn-gallery').onclick = () => {
+      renderGallery();
+      showScreen('screen-gallery');
+    };
+    document.getElementById('btn-settings').onclick = () => showScreen('screen-settings');
+    
+    // Character selection
+    document.querySelectorAll('.tone-swatch').forEach(sw => {
+      sw.onclick = () => {
+        document.querySelectorAll('.tone-swatch').forEach(s => s.classList.remove('selected'));
+        sw.classList.add('selected');
+        GameState.skinTone = sw.dataset.tone;
+        document.getElementById('char-hand-img').src = `../Assets/Art/Hands/hand_${GameState.skinTone}.png`;
+        AudioEngine.playClick();
+      };
+    });
+    document.getElementById('btn-char-back').onclick = () => showScreen('screen-menu');
+    document.getElementById('btn-start-spa').onclick = () => {
+      document.getElementById('care-hand-img').src = `../Assets/Art/Hands/hand_${GameState.skinTone}.png`;
+      SpaManager.init();
+      showScreen('screen-care');
+    };
+    document.getElementById('btn-start-studio').onclick = () => {
+      renderAllNails();
+      loadPalette('polish');
+      showScreen('screen-studio');
+    };
+
+    // 4-Step Interactive Spa Manager (Sustained Dragging, Wearing Nails & Soap Wash)
+    const SpaManager = {
+      step: 1, // 1: File, 2: Soap/Bubbles, 3: Cotton Pad Wipe, 4: Hand Cream
+      progress: 0,
+      bubbles: [],
+      lastX: null,
+      lastY: null,
+      accumDist: 0,
+      tools: {
+        1: '../Assets/Art/HandCare/tool_nail_file.png',
+        2: '../Assets/Art/HandCare/tool_brush.png',
+        3: '../Assets/Art/HandCare/tool_cotton_pad.png',
+        4: '../Assets/Art/HandCare/tool_hand_cream.png'
+      },
+      rotations: {
+        1: '-35deg',
+        2: '15deg',
+        3: '0deg',
+        4: '-25deg'
+      },
+      instructions: {
+        1: 'Step 1: File the long, jagged nails until neat and smooth! 🪚',
+        2: 'Step 2: Scrub with soap to wash away the mud and dirt! 🧼',
+        3: 'Step 3: Wipe with the soft cotton pad to dry all the foam! 🌸',
+        4: 'Step 4: Massage rich cream for silky glowing skin! 💖'
+      },
+      init() {
+        this.step = 1;
+        this.setupStep();
+      },
+      setupStep() {
+        this.progress = 0;
+        this.lastX = null;
+        this.lastY = null;
+        this.accumDist = 0;
+        this.bubbles = [];
+        
+        const wrap = document.getElementById('care-hand-wrap');
+        const tipsLayer = document.getElementById('spa-nail-tips-layer');
+        const dirtLayer = document.getElementById('spa-dirt-layer');
+        const foamLayer = document.getElementById('spa-foam-layer');
+        const particlesContainer = document.getElementById('spa-bubbles-container');
+        
+        if (particlesContainer) particlesContainer.innerHTML = '';
+        
+        if (this.step === 1) {
+          // Setup Step 1: Long, jagged, unfiled nails that wear down as filed
+          if (wrap) wrap.style.filter = 'none';
+          if (dirtLayer) { dirtLayer.innerHTML = ''; dirtLayer.style.opacity = '0'; }
+          if (foamLayer) { foamLayer.innerHTML = ''; foamLayer.style.opacity = '0'; }
+          if (tipsLayer) {
+            tipsLayer.style.opacity = '1';
+            tipsLayer.innerHTML = this.getJaggedNailsHTML();
+          }
+        } else if (this.step === 2) {
+          // Setup Step 2: Mud and dirt smudges all over hand that wash away with soap
+          if (tipsLayer) tipsLayer.innerHTML = '';
+          if (wrap) wrap.style.filter = 'none';
+          if (foamLayer) { foamLayer.innerHTML = ''; foamLayer.style.opacity = '1'; }
+          if (dirtLayer) {
+            dirtLayer.style.opacity = '1';
+            dirtLayer.innerHTML = this.getDirtSVG();
+          }
+        } else if (this.step === 3) {
+          // Setup Step 3: Foam covers hand, gets wiped off cleanly
+          if (tipsLayer) tipsLayer.innerHTML = '';
+          if (dirtLayer) { dirtLayer.innerHTML = ''; dirtLayer.style.opacity = '0'; }
+          if (foamLayer) {
+            foamLayer.style.opacity = '1';
+            if (foamLayer.children.length === 0) {
+              foamLayer.innerHTML = this.getFoamHTML();
+            }
+          }
+        } else if (this.step === 4) {
+          // Setup Step 4: Clean hand massages cream and gets radiant glow
+          if (tipsLayer) tipsLayer.innerHTML = '';
+          if (dirtLayer) { dirtLayer.innerHTML = ''; dirtLayer.style.opacity = '0'; }
+          if (foamLayer) { foamLayer.innerHTML = ''; foamLayer.style.opacity = '0'; }
+          if (wrap) wrap.style.filter = 'none';
+        }
+        
+        this.updateUI();
+      },
+      getJaggedNailsHTML() {
+        // Long, overgrown unfiled nail extensions with natural cuticle curves & jagged free edge
+        const nails = [
+          { name: 'pinky',  x: 17,  y: 79,  rot: -18, w: 18, h: 30 },
+          { name: 'ring',   x: 65,  y: 27,  rot: -5,  w: 22, h: 36 },
+          { name: 'middle', x: 105, y: 2,   rot: 0,   w: 24, h: 38 },
+          { name: 'index',  x: 158, y: 20,  rot: 5,   w: 22, h: 36 },
+          { name: 'thumb',  x: 210, y: 131, rot: 28,  w: 24, h: 34 },
+        ];
+        return nails.map(n => `
+          <div class="jagged-nail-tip" id="jagged-${n.name}" data-rot="${n.rot}"
+               style="position: absolute; left:${n.x}px; top:${n.y}px; width:${n.w}px; height:${n.h}px; transform-origin: center bottom; transform: rotate(${n.rot}deg) scaleY(1);">
+            <svg width="${n.w}" height="${n.h}" viewBox="0 0 24 38" style="overflow:visible;">
+              <defs>
+                <linearGradient id="unfiled-grad-${n.name}" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0%" stop-color="#FFECE6" stop-opacity="0.95"/>
+                  <stop offset="50%" stop-color="#FFF5F0" stop-opacity="0.95"/>
+                  <stop offset="85%" stop-color="#FCF3EB" stop-opacity="0.98"/>
+                  <stop offset="100%" stop-color="#F2E6D8" stop-opacity="1"/>
+                </linearGradient>
+              </defs>
+              <!-- Overgrown unfiled natural nail body -->
+              <path d="M 2 34 C 7 38, 17 38, 22 34 C 23 24, 24 14, 22 4 L 17 8 L 12 2 L 7 8 L 2 4 C 0 14, 1 24, 2 34 Z"
+                    fill="url(#unfiled-grad-${n.name})" stroke="#D8ABA0" stroke-width="1.2"/>
+              <!-- Rough jagged unfiled free edge -->
+              <path d="M 2 4 L 7 8 L 12 2 L 17 8 L 22 4" stroke="#FFFFFF" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+        `).join('');
+      },
+      getDirtSVG() {
+        const spots = [
+          // Palm mud splashes
+          { cx: 125, cy: 240, rx: 28, ry: 20, op: 0.8 },
+          { cx: 145, cy: 265, rx: 22, ry: 16, op: 0.75 },
+          { cx: 105, cy: 225, rx: 20, ry: 15, op: 0.7 },
+          { cx: 130, cy: 205, rx: 24, ry: 18, op: 0.65 },
+          // Knuckles
+          { cx: 75,  cy: 165, rx: 14, ry: 10, op: 0.75 },
+          { cx: 118, cy: 155, rx: 16, ry: 11, op: 0.8 },
+          { cx: 160, cy: 160, rx: 15, ry: 10, op: 0.75 },
+          { cx: 205, cy: 215, rx: 14, ry: 10, op: 0.7 },
+          // Fingers
+          { cx: 35,  cy: 145, rx: 10, ry: 16, op: 0.7 },
+          { cx: 80,  cy: 110, rx: 12, ry: 18, op: 0.72 },
+          { cx: 122, cy: 90,  rx: 13, ry: 18, op: 0.75 },
+          { cx: 175, cy: 105, rx: 12, ry: 17, op: 0.72 },
+          { cx: 225, cy: 195, rx: 14, ry: 15, op: 0.7 },
+          // Wrist mud drops
+          { cx: 128, cy: 320, rx: 20, ry: 14, op: 0.65 },
+        ];
+        let s = '<defs><filter id="dirt-blur"><feGaussianBlur stdDeviation="1.5"/></filter></defs>';
+        spots.forEach(sp => {
+          s += `<ellipse cx="${sp.cx}" cy="${sp.cy}" rx="${sp.rx}" ry="${sp.ry}" fill="#4A2E1B" opacity="${sp.op}" filter="url(#dirt-blur)"/>`;
+          s += `<ellipse cx="${sp.cx - 2}" cy="${sp.cy - 1}" rx="${sp.rx * 0.65}" ry="${sp.ry * 0.65}" fill="#331A0C" opacity="${sp.op * 0.9}"/>`;
+          s += `<circle cx="${sp.cx + 4}" cy="${sp.cy - 3}" r="2.2" fill="#5D3A24" opacity="0.9"/>`;
+          s += `<circle cx="${sp.cx - 5}" cy="${sp.cy + 4}" r="1.8" fill="#2E170A" opacity="0.9"/>`;
+        });
+        return s;
+      },
+      getFoamHTML() {
+        const foamSpots = [
+          { x: 125, y: 240, size: 44 }, { x: 145, y: 265, size: 40 },
+          { x: 105, y: 225, size: 38 }, { x: 75,  y: 165, size: 34 },
+          { x: 118, y: 155, size: 36 }, { x: 160, y: 160, size: 34 },
+          { x: 205, y: 215, size: 32 }, { x: 35,  y: 145, size: 28 },
+          { x: 80,  y: 110, size: 30 }, { x: 122, y: 90,  size: 32 },
+          { x: 175, y: 105, size: 30 }, { x: 225, y: 195, size: 30 },
+          { x: 130, y: 290, size: 38 },
+        ];
+        return foamSpots.map(f => `
+          <div class="soapy-foam-blob" style="left:${f.x - f.size/2}px; top:${f.y - f.size/2}px; width:${f.size}px; height:${f.size}px;"></div>
+        `).join('');
+      },
+      updateUI() {
+        const toolEl = document.getElementById('care-tool-active');
+        toolEl.src = this.tools[this.step];
+        toolEl.style.setProperty('--tool-rot', this.rotations[this.step]);
+        document.getElementById('spa-instruction').innerText = this.instructions[this.step];
+        document.getElementById('care-progress').style.width = `${this.progress}%`;
+        const pctEl = document.getElementById('care-progress-pct');
+        if (pctEl) pctEl.innerText = `${Math.floor(this.progress)}%`;
+
+        for (let i = 1; i <= 4; i++) {
+          const pill = document.getElementById(`pill-step-${i}`);
+          if (pill) {
+            pill.classList.remove('active', 'done');
+            if (i < this.step) pill.classList.add('done');
+            else if (i === this.step) pill.classList.add('active');
+          }
+        }
+        const nextBtn = document.getElementById('btn-next-spa-step');
+        if (nextBtn) {
+          nextBtn.style.display = (this.progress >= 100 && this.step < 4) ? 'block' : 'none';
+        }
+      },
+      nextStep() {
+        if (this.step < 4) {
+          this.step++;
+          this.setupStep();
+          AudioEngine.playSparkle();
+        } else {
+          AudioEngine.playSparkle();
+          renderAllNails();
+          loadPalette('polish');
+          showScreen('screen-studio');
+          showToast("🎉 Spa Complete! Ready for Nail Art! 💅✨");
+        }
+      },
+      handleInteract(clientX, clientY) {
+        if (this.progress >= 100) return;
+        
+        const container = document.getElementById('care-canvas-box');
+        const wrap = document.getElementById('care-hand-wrap');
+        if (!container || !wrap) return;
+
+        const rect = container.getBoundingClientRect();
+        const localX = clientX - rect.left;
+        const localY = clientY - rect.top;
+
+        const tool = document.getElementById('care-tool-active');
+        if (tool) {
+          tool.style.left = `${localX}px`;
+          tool.style.top = `${localY}px`;
+        }
+
+        if (this.lastX === null) {
+          this.lastX = localX;
+          this.lastY = localY;
+          return;
+        }
+
+        const dx = localX - this.lastX;
+        const dy = localY - this.lastY;
+        const dist = Math.hypot(dx, dy);
+
+        // Require minimum movement to register rubbing
+        if (dist < 3) return;
+
+        this.lastX = localX;
+        this.lastY = localY;
+
+        // Progress requires sustained drag motion
+        const progressGain = dist * 0.055;
+        this.progress = Math.min(100, this.progress + progressGain);
+
+        // --- STEP-SPECIFIC DYNAMIC VISUAL PROGRESS ---
+        if (this.step === 1) {
+          // Nails wear down smoothly and become neat!
+          document.querySelectorAll('.jagged-nail-tip').forEach(tip => {
+            const rot = tip.dataset.rot || '0';
+            const scaleY = Math.max(0, 1 - (this.progress / 100));
+            tip.style.transform = `rotate(${rot}deg) scaleY(${scaleY})`;
+            if (this.progress >= 90) {
+              tip.style.opacity = `${Math.max(0, (100 - this.progress) / 10)}`;
+            }
+          });
+        } else if (this.step === 2) {
+          // Dirt washes away gradually as soap is scrubbed!
+          const dirtLayer = document.getElementById('spa-dirt-layer');
+          if (dirtLayer) {
+            dirtLayer.style.opacity = `${Math.max(0, 1 - (this.progress / 100))}`;
+          }
+        } else if (this.step === 3) {
+          // Foam & water wipes away cleanly!
+          const foamLayer = document.getElementById('spa-foam-layer');
+          if (foamLayer) {
+            foamLayer.style.opacity = `${Math.max(0, 1 - (this.progress / 100))}`;
+          }
+        } else if (this.step === 4) {
+          // Hand skin gains a dewy, glowing, silky radiant shine!
+          const glow = (this.progress * 0.16).toFixed(1);
+          const bright = (1 + this.progress * 0.0006).toFixed(3);
+          const sat = (1 + this.progress * 0.001).toFixed(3);
+          wrap.style.filter = `drop-shadow(0 0 ${glow}px rgba(255, 182, 193, 0.9)) brightness(${bright}) saturate(${sat})`;
+        }
+
+        const wrapRect = wrap.getBoundingClientRect();
+        const handX = clientX - wrapRect.left;
+        const handY = clientY - wrapRect.top;
+
+        this.accumDist = (this.accumDist || 0) + dist;
+        if (this.accumDist > 18) {
+          this.accumDist = 0;
+          if (this.step === 1) {
+            AudioEngine.playFile();
+            this.spawnNailDust(handX, handY);
+          } else if (this.step === 2) {
+            AudioEngine.playBubble();
+            this.spawnBubble(handX, handY);
+          } else if (this.step === 3) {
+            AudioEngine.playBrush();
+            this.popNearestBubble(handX, handY);
+          } else if (this.step === 4) {
+            AudioEngine.playCream();
+            this.spawnCream(handX, handY);
+          }
+        }
+
+        this.updateUI();
+
+        if (this.progress >= 100) {
+          AudioEngine.playSparkle();
+          if (this.step === 1) {
+            document.getElementById('spa-instruction').innerText = "✨ Nails perfectly neat, smooth and manicured!";
+          } else if (this.step === 2) {
+            document.getElementById('spa-instruction').innerText = "✨ Mud & dirt completely washed away!";
+          } else if (this.step === 3) {
+            document.getElementById('spa-instruction').innerText = "✨ Squeaky clean, fresh & dry!";
+          } else if (this.step === 4) {
+            document.getElementById('spa-instruction').innerText = "✨ Silky soft, glowing & radiant! Ready for Salon!";
+            setTimeout(() => {
+              this.nextStep();
+            }, 1200);
+          }
+        }
+      },
+      spawnNailDust(x, y) {
+        const wrap = document.getElementById('spa-bubbles-container');
+        if (!wrap) return;
+        for (let i = 0; i < 3; i++) {
+          const d = document.createElement('div');
+          d.className = 'nail-dust-particle';
+          d.style.width = `${Math.random() * 4 + 3}px`;
+          d.style.height = d.style.width;
+          d.style.left = `${x + (Math.random() * 20 - 10)}px`;
+          d.style.top = `${y + (Math.random() * 20 - 10)}px`;
+          d.style.setProperty('--dx', `${(Math.random() - 0.5) * 40}px`);
+          d.style.setProperty('--dy', `${(Math.random() - 0.5) * 40}px`);
+          wrap.appendChild(d);
+          setTimeout(() => d.remove(), 450);
+        }
+      },
+      spawnBubble(x, y) {
+        const wrap = document.getElementById('care-hand-wrap');
+        const foam = document.getElementById('spa-foam-layer');
+        if (!foam || !wrap) return;
+
+        // Spawn 3-4 clustered white foamy suds blobs directly on the hand
+        for (let i = 0; i < 3; i++) {
+          const b = document.createElement('div');
+          b.className = 'soapy-foam-blob';
+          const size = Math.floor(Math.random() * 18) + 22; // 22px to 40px
+          const offsetX = (Math.random() - 0.5) * 32;
+          const offsetY = (Math.random() - 0.5) * 32;
+          const posX = Math.max(5, Math.min(245 - size, x + offsetX - size/2));
+          const posY = Math.max(5, Math.min(370 - size, y + offsetY - size/2));
+
+          b.style.width = `${size}px`;
+          b.style.height = `${size}px`;
+          b.style.left = `${posX}px`;
+          b.style.top = `${posY}px`;
+          foam.appendChild(b);
+          this.bubbles.push(b);
+        }
+
+        // Spawn floating iridescent bubble
+        const floatB = document.createElement('div');
+        floatB.className = 'soapy-floating-bubble';
+        floatB.innerText = '🫧';
+        floatB.style.left = `${x - 10}px`;
+        floatB.style.top = `${y - 12}px`;
+        floatB.style.setProperty('--bx', `${(Math.random() - 0.5) * 36}px`);
+        wrap.appendChild(floatB);
+        setTimeout(() => floatB.remove(), 1100);
+      },
+      popNearestBubble(x, y) {
+        const wrap = document.getElementById('care-hand-wrap');
+        for (let i = 0; i < 3 && this.bubbles.length > 0; i++) {
+          const b = this.bubbles.pop();
+          if (b && b.parentNode) {
+            b.style.transform = 'scale(1.3)';
+            b.style.opacity = '0';
+            setTimeout(() => b.remove(), 180);
+          }
+        }
+        if (wrap) {
+          const drop = document.createElement('div');
+          drop.innerText = '💧';
+          drop.style.position = 'absolute';
+          drop.style.fontSize = '14px';
+          drop.style.left = `${x - 7}px`;
+          drop.style.top = `${y - 10}px`;
+          drop.style.pointerEvents = 'none';
+          drop.style.transition = 'all 0.4s ease-out';
+          wrap.appendChild(drop);
+          setTimeout(() => {
+            drop.style.transform = 'translateY(15px) scale(0.5)';
+            drop.style.opacity = '0';
+            setTimeout(() => drop.remove(), 400);
+          }, 20);
+        }
+      },
+      spawnCream(x, y) {
+        const wrap = document.getElementById('spa-bubbles-container');
+        if (!wrap) return;
+        const c = document.createElement('div');
+        c.className = 'cream-dollop';
+        c.style.left = `${x - 14}px`;
+        c.style.top = `${y - 14}px`;
+        wrap.appendChild(c);
+        setTimeout(() => {
+          c.style.transform = 'scale(1.8)';
+          c.style.opacity = '0';
+          setTimeout(() => c.remove(), 400);
+        }, 500);
+      }
+    };
+    const careBox = document.getElementById('care-canvas-box');
+    let isCarePointerDown = false;
+
+    function startCareDrag(clientX, clientY) {
+      isCarePointerDown = true;
+      SpaManager.lastX = null;
+      SpaManager.lastY = null;
+      SpaManager.handleInteract(clientX, clientY);
+    }
+    function moveCareDrag(clientX, clientY) {
+      if (isCarePointerDown) {
+        SpaManager.handleInteract(clientX, clientY);
+      }
+    }
+    function endCareDrag() {
+      isCarePointerDown = false;
+      SpaManager.lastX = null;
+      SpaManager.lastY = null;
+    }
+
+    careBox.addEventListener('pointerdown', (e) => {
+      try { careBox.setPointerCapture(e.pointerId); } catch(err) {}
+      startCareDrag(e.clientX, e.clientY);
+    });
+    careBox.addEventListener('pointermove', (e) => {
+      moveCareDrag(e.clientX, e.clientY);
+    });
+    careBox.addEventListener('pointerup', endCareDrag);
+    careBox.addEventListener('pointercancel', endCareDrag);
+
+    // Explicit touch event listeners to ensure smooth responsiveness on mobile Android webviews
+    careBox.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) {
+        e.preventDefault();
+        startCareDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+    careBox.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        e.preventDefault();
+        moveCareDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
+    careBox.addEventListener('touchend', endCareDrag);
+    careBox.addEventListener('touchcancel', endCareDrag);
+
+    document.getElementById('btn-next-spa-step').onclick = () => {
+      SpaManager.nextStep();
+    };
+
+    document.getElementById('btn-care-back').onclick = () => showScreen('screen-char');
+    document.getElementById('btn-care-done').onclick = () => {
+      renderAllNails();
+      loadPalette('polish');
+      showScreen('screen-studio');
+    };
+
+    // UV Gel Lamp Dryer Action (Smooth Progress & Sustained Curing)
+    let isUVCuring = false;
+    document.getElementById('btn-uv-lamp').onclick = () => {
+      if (isUVCuring) return;
+      isUVCuring = true;
+      const overlay = document.getElementById('uv-lamp-overlay');
+      const text = document.getElementById('uv-countdown-text');
+      const progressFill = document.getElementById('uv-progress-fill');
+      overlay.classList.add('active');
+      AudioEngine.playUVHum();
+
+      const totalDuration = 4.5;
+      let elapsed = 0.0;
+      const intervalMs = 80;
+      
+      if (progressFill) progressFill.style.width = '0%';
+      text.innerText = `✨ CURING GEL: 5s`;
+
+      const timer = setInterval(() => {
+        elapsed += intervalMs / 1000;
+        let pct = Math.min(100, (elapsed / totalDuration) * 100);
+        if (progressFill) progressFill.style.width = `${pct}%`;
+        
+        let remaining = Math.max(0, Math.ceil(totalDuration - elapsed));
+        text.innerText = `✨ CURING GEL: ${remaining}s`;
+
+        if (elapsed >= totalDuration) {
+          clearInterval(timer);
+          text.innerText = `💎 CURED & ULTRA GLOSSY! ✨`;
+          AudioEngine.playSparkle();
+          
+          Object.keys(GameState.nails).forEach(k => {
+            if (GameState.nails[k].effect === 'matte') GameState.nails[k].effect = 'glossy';
+          });
+          renderAllNails();
+
+          setTimeout(() => {
+            overlay.classList.remove('active');
+            isUVCuring = false;
+            showToast("✨ UV Curing Complete: Nails are high-gloss & dried!");
+          }, 1200);
+        }
+      }, intervalMs);
+    };
+
+    // Camera / Result with Flash Effect
+    document.getElementById('btn-camera').onclick = () => {
+      AudioEngine.playShutter();
+      const flash = document.getElementById('camera-flash');
+      flash.classList.add('flash');
+      setTimeout(() => {
+        flash.classList.remove('flash');
+        const copyWrap = document.getElementById('result-stage-copy');
+        copyWrap.innerHTML = document.getElementById('hand-canvas-wrap').innerHTML;
+        showScreen('screen-result');
+        AudioEngine.playSparkle();
+        setTimeout(launchConfetti, 300);
+      }, 150);
+    };
+
+    // Studio Nail Selection
+    document.querySelectorAll('.nail-anchor').forEach(n => {
+      n.onclick = (e) => {
+        GameState.selectedNail = n.dataset.id;
+        renderAllNails();
+        AudioEngine.playClick();
+      };
+    });
+
+    // Studio Tools
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadPalette(btn.dataset.tab);
+        AudioEngine.playClick();
+      };
+    });
+
+    document.getElementById('btn-undo').onclick = undo;
+    document.getElementById('btn-redo').onclick = redo;
+    document.getElementById('btn-reset').onclick = () => {
+      pushState();
+      GameState.nails[GameState.selectedNail] = {
+        shape: 'almond', color: '#FFB6C1', gradient: null, effect: 'glossy', pattern: 'none', stickers: [], gems: []
+      };
+      renderAllNails();
+      AudioEngine.playClick();
+    };
+    document.getElementById('btn-apply-all').onclick = () => {
+      pushState();
+      const ref = JSON.parse(JSON.stringify(GameState.nails[GameState.selectedNail]));
+      Object.keys(GameState.nails).forEach(k => {
+        GameState.nails[k] = JSON.parse(JSON.stringify(ref));
+      });
+      renderAllNails();
+      AudioEngine.playSparkle();
+      showToast("Applied to all fingernails!");
+    };
+    document.getElementById('btn-studio-back').onclick = () => showScreen('screen-char');
+    document.getElementById('btn-result-back').onclick = () => showScreen('screen-studio');
+    document.getElementById('btn-home-menu').onclick = () => showScreen('screen-menu');
+    document.getElementById('btn-cycle-bg').onclick = () => {
+      GameState.backgroundIndex = (GameState.backgroundIndex + 1) % GameState.backgrounds.length;
+      const bg = GameState.backgrounds[GameState.backgroundIndex];
+      document.getElementById('screen-result').style.backgroundImage = `url(../Assets/Art/Backgrounds/${bg}.png)`;
+      AudioEngine.playClick();
+    };
+
+    document.getElementById('btn-save-gallery').onclick = () => {
+      const entry = {
+        id: 'design_' + Date.now(),
+        date: new Date().toLocaleDateString(),
+        state: JSON.parse(JSON.stringify(GameState))
+      };
+      GameState.savedGallery.unshift(entry);
+      AudioEngine.playSparkle();
+      showToast("💖 Saved to Gallery!");
+    };
+
+    document.getElementById('btn-share-design').onclick = () => {
+      AudioEngine.playClick();
+      showToast("📸 Photo saved to device library!");
+    };
+
+    // Gallery
+    document.getElementById('btn-gallery-back').onclick = () => showScreen('screen-menu');
+
+    // Settings
+    document.getElementById('btn-settings-back').onclick = () => showScreen('screen-menu');
+    document.getElementById('chk-music').onchange = (e) => AudioEngine.musicEnabled = e.target.checked;
+    document.getElementById('chk-sfx').onchange = (e) => AudioEngine.sfxEnabled = e.target.checked;
+
+    // Parental Gate
+    let expectedGate = 0;
+    let gateSuccessCb = null;
+    function openParentalGate(cb) {
+      gateSuccessCb = cb;
+      const a = Math.floor(Math.random() * 6) + 3;
+      const b = Math.floor(Math.random() * 6) + 3;
+      expectedGate = a * b;
+      document.getElementById('gate-question').innerText = `Ask a parent: What is ${a} x ${b}?`;
+      document.getElementById('gate-answer').value = '';
+      document.getElementById('parental-gate-modal').classList.add('active');
+    }
+
+    document.getElementById('btn-gate-ok').onclick = () => {
+      const ans = parseInt(document.getElementById('gate-answer').value);
+      if (ans === expectedGate) {
+        document.getElementById('parental-gate-modal').classList.remove('active');
+        if (gateSuccessCb) gateSuccessCb();
+      } else {
+        showToast("Incorrect answer. Please ask a grown-up!");
+      }
+    };
+    document.getElementById('btn-gate-cancel').onclick = () => {
+      document.getElementById('parental-gate-modal').classList.remove('active');
+    };
+
+    document.getElementById('btn-open-privacy').onclick = () => {
+      openParentalGate(() => showToast("Opening Privacy Policy..."));
+    };
+    document.getElementById('btn-open-terms').onclick = () => {
+      openParentalGate(() => showToast("Opening Terms of Service..."));
+    };
+
+    // Audio initial setup
+    document.getElementById('btn-menu-music').onclick = () => {
+      AudioEngine.musicEnabled = !AudioEngine.musicEnabled;
+      document.getElementById('btn-menu-music').style.opacity = AudioEngine.musicEnabled ? '1' : '0.4';
+    };
+    document.getElementById('btn-menu-sfx').onclick = () => {
+      AudioEngine.sfxEnabled = !AudioEngine.sfxEnabled;
+      document.getElementById('btn-menu-sfx').style.opacity = AudioEngine.sfxEnabled ? '1' : '0.4';
+    };
+
+    // 3D Parallax & Gyro Tilt Interaction
+    const stage = document.querySelector('.studio-stage');
+    const handWrap = document.getElementById('hand-canvas-wrap');
+    if (stage && handWrap) {
+      const handleTilt = (clientX, clientY) => {
+        const rect = stage.getBoundingClientRect();
+        const nx = (clientX - rect.left) / rect.width - 0.5;
+        const ny = (clientY - rect.top) / rect.height - 0.5;
+        const rotX = -ny * 16; // Max ±8 deg vertical tilt
+        const rotY = nx * 20;  // Max ±10 deg horizontal tilt
+        handWrap.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) scale3d(1.02, 1.02, 1.02)`;
+      };
+
+      stage.addEventListener('mousemove', (e) => {
+        handleTilt(e.clientX, e.clientY);
+      });
+
+      stage.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches.length > 0) {
+          handleTilt(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+
+      const resetTilt = () => {
+        handWrap.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+      };
+
+      stage.addEventListener('mouseleave', resetTilt);
+      stage.addEventListener('touchend', resetTilt);
+    }
+
+    renderAllNails();
+  });
+
+  // ── Brush stroke animation ─────────────────────────────────
+  function spawnBrushAnim() {
+    const wrap = document.getElementById('hand-canvas-wrap');
+    const selEl = document.getElementById(`nail-${GameState.selectedNail}`);
+    if (!wrap || !selEl) return;
+    const rect  = selEl.getBoundingClientRect();
+    const wrect = wrap.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'brush-anim';
+    el.textContent = '🖌️';
+    el.style.left = `${rect.left - wrect.left + rect.width/2 - 16}px`;
+    el.style.top  = `${rect.top  - wrect.top  - 20}px`;
+    wrap.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  // ── Confetti ────────────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width  = canvas.parentElement.offsetWidth  || 480;
+    canvas.height = canvas.parentElement.offsetHeight || 800;
+    const cols = ['#FF69B4','#FFD700','#B5FFFC','#FF85A2','#E6E6FA','#FF1493','#FFF44F'];
+    const particles = Array.from({length: 100}, () => ({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 80,
+      color: cols[Math.random() * cols.length | 0],
+      w: Math.random() * 10 + 4,
+      h: Math.random() *  6 + 3,
+      speed: Math.random() *  3 + 1.5,
+      angle: Math.random() * Math.PI * 2,
+      spin:  (Math.random() - 0.5) * 0.18,
+      drift: (Math.random() - 0.5) * 1.2
+    }));
+    let raf;
+    let ttl = 220;
+    function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => {
+        p.y     += p.speed;
+        p.x     += p.drift;
+        p.angle += p.spin;
+        ctx.save();
+        ctx.translate(p.x + p.w/2, p.y + p.h/2);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      });
+      ttl--;
+      if (ttl > 0) raf = requestAnimationFrame(tick);
+      else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    cancelAnimationFrame(raf);
+    tick();
+  }
+
+  function renderGallery() {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = '';
+    if (GameState.savedGallery.length === 0) {
+      grid.innerHTML = `<div style="grid-column: span 2; text-align: center; color: #9C4D76; padding: 40px 0;">No designs saved yet.<br>Create your first nail art! ✨</div>`;
+      return;
+    }
+    GameState.savedGallery.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'gallery-item';
+      card.innerHTML = `
+        <img src="../Assets/Art/Hands/hand_${item.state.skinTone}.png" style="width:100px; height:120px; object-fit:contain;">
+        <span style="font-weight:700; color:#FF1493; margin-top:8px;">Design #${idx+1}</span>
+        <span style="font-size:12px; color:#6C757D;">${item.date}</span>
+      `;
+      card.onclick = () => {
+        GameState.skinTone = item.state.skinTone;
+        GameState.nails = JSON.parse(JSON.stringify(item.state.nails));
+        GameState.ring = item.state.ring;
+        GameState.bracelet = item.state.bracelet;
+        renderAllNails();
+        loadPalette('polish');
+        showScreen('screen-studio');
+        showToast("Loaded design from gallery!");
+      };
+      grid.appendChild(card);
+    });
+  }
+</script>
+</body>
+</html>
